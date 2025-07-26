@@ -1,0 +1,13 @@
+{
+  "name": "Alchemist Assistant",
+  "short_name": "Alchemist",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "description": "Asistent AI cu voce, personalitate și PWA",
+  "icons": [{
+    "src": "icon.png",
+    "type": "image/png",
+    "sizes": "192x192"
+  }]
+}
