@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Alchemist Assistant</title>
+  <link rel="manifest" href="manifest.json" />
+  <link rel="stylesheet" href="style.css" />
+
+  <script>
+    if (!localStorage.getItem('authenticated')) {
+      const pass = prompt('🔐 Introdu parola pentru a accesa Alchemist Assistant:');
+      if (pass !== 'alchemy2090') {
+        alert('Parolă incorectă!');
+        window.location.reload();
+      } else {
+        localStorage.setItem('authenticated', 'true');
+      }
+    }
+  </script>
+</head>
+<body>
+  <h1>🧙‍♂️ Alchemist Assistant</h1>
+  <button onclick="logout()" class="logout">🔒 Delogare</button>
+
+  <label>🌐 Alege limba răspunsului:
+    <select id="lang">
+      <option value="ro">Română</option>
+      <option value="en">English</option>
+    </select>
+  </label>
+
+  <label>🎭 Alege personalitatea:
+    <select id="personality">
+      <option value="Magician">Magician</option>
+      <option value="Motivațional">Motivațional</option>
+      <option value="Comediant">Comediant</option>
+      <option value="Serios">Serios</option>
+    </select>
+  </label>
+
+  <input type="text" id="prompt" placeholder="În‽treabă ceva..." />
+  <button onclick="sendPrompt()">Trimite</button>
+  <button onclick="startListening()">🎤 Vorbește</button>
+  <button onclick="clearConversation()">🗑️ Șterge conversația</button>
+
+  <label>🔈 Selectează voce:
+    <select id="voiceSelect"></select>
+  </label>
+
+  <div id="conversation"></div>
+  <button onclick="speakAgain()">🔊 Vorbește din nou</button>
+  <button onclick="stopVoice()">🛑 Oprește vocea</button>
+
+  <script>
+    let lastResponse = '';
+
+    async function sendPrompt() {
+      const prompt = document.getElementById('prompt').value.trim();
+      if (!prompt) return;
+
+      const lang = document.getElementById('lang').value;
+      const personality = document.getElementById('personality').value;
+      const conversation = document.getElementById('conversation');
+
+      const message = `Răspunde în limba ${lang === 'ro' ? 'română' : 'engleză'} cu tonul unui ${personality}:\n${prompt}`;
+      conversation.innerHTML += `<div><strong>Tu:</strong> ${prompt}</div>`;
+      document.getElementById('prompt').value = '';
+
+      const response = await fetch('/gpt', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ prompt: message })
+      });
+
+      const data = await response.json();
+      const reply = data.response || 'Fără răspuns.';
+
+      lastResponse = reply;
+      conversation.innerHTML += `<div><strong>AI:</strong> ${reply}</div>`;
+      speakText(reply);
+      saveConversation();
+    }
+
+    function speakText(text) {
+      const selectedVoice = document.getElementById('voiceSelect').value;
+      const utterance = new SpeechSynthesisUtterance(text);
+      utterance.lang = 'ro-RO';
+      utterance.voice = speechSynthesis.getVoices().find(v => v.name === selectedVoice);
+      speechSynthesis.cancel();
+      speechSynthesis.speak(utterance);
+    }
+
+    function speakAgain() {
+      if (lastResponse) speakText(lastResponse);
+    }
+
+    function stopVoice() {
+      speechSynthesis.cancel();
+    }
+
+    function clearConversation() {
+      if (confirm('Ești sigur că vrei să ștergi conversația?')) {
+        document.getElementById('conversation').innerHTML = '';
+        localStorage.removeItem('conversation');
+      }
+    }
+
+    function logout() {
+      localStorage.removeItem('authenticated');
+      alert('Te-ai delogat.');
+      location.reload();
+    }
+
+    function saveConversation() {
+      const html = document.getElementById('conversation').innerHTML;
+      localStorage.setItem('conversation', html);
+    }
+
+    function loadConversation() {
+      const html = localStorage.getItem('conversation');
+      if (html) {
+        document.getElementById('conversation').innerHTML = html;
+      }
+    }
+
+    function populateVoices() {
+      const voices = speechSynthesis.getVoices();
+      const select = document.getElementById('voiceSelect');
+      select.innerHTML = '';
+      voices.forEach(voice => {
+        const opt = document.createElement('option');
+        opt.value = voice.name;
+        opt.textContent = `${voice.name} (${voice.lang})`;
+        select.appendChild(opt);
+      });
+    }
+
+    function startListening() {
+      const recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
+      recognition.lang = 'ro-RO';
+      recognition.start();
+      recognition.onresult = (event) => {
+        const transcript = event.results[0][0].transcript;
+        document.getElementById('prompt').value = transcript;
+      };
+    }
+
+    window.onload = () => {
+      populateVoices();
+      loadConversation();
+    };
+
+    speechSynthesis.onvoiceschanged = populateVoices;
+  </script>
+</body>
+</html>
