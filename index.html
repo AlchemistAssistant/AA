@@ -3,13 +3,13 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Alchemist Assistant</title>
+  <title>AA</title>
   <link rel="manifest" href="manifest.json" />
   <link rel="stylesheet" href="style.css" />
 
   <script>
     if (!localStorage.getItem('authenticated')) {
-      const pass = prompt('🔐 Introdu parola pentru a accesa Alchemist Assistant:');
+      const pass = prompt('🔐 Introdu parola pentru a accesa AA:');
       if (pass !== 'alchemy2090') {
         alert('Parolă incorectă!');
         window.location.reload();
@@ -20,7 +20,7 @@
   </script>
 </head>
 <body>
-  <h1>🧙‍♂️ Alchemist Assistant</h1>
+  <h1>🧙‍♂️ AA</h1>
   <button onclick="logout()" class="logout">🔒 Delogare</button>
 
   <label>🌐 Alege limba răspunsului:
@@ -146,12 +146,19 @@
       };
     }
 
+    // PWA - Înregistrare service worker
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('sw.js').then(() => {
+        console.log('✅ Service Worker înregistrat');
+      }).catch(error => {
+        console.warn('❌ Eroare SW:', error);
+      });
+    }
+
     window.onload = () => {
       populateVoices();
       loadConversation();
     };
-
-    speechSynthesis.onvoiceschanged = populateVoices;
   </script>
 </body>
 </html>
