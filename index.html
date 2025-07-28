@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>AA</title>
+  <title>🧙‍♂️ AA</title>
   <link rel="manifest" href="manifest.json" />
   <link rel="stylesheet" href="style.css" />
 
@@ -70,7 +70,7 @@
       const response = await fetch('/gpt', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ prompt: message })
+        body: JSON.stringify({ prompt: message, lang, personality })
       });
 
       const data = await response.json();
@@ -85,7 +85,7 @@
     function speakText(text) {
       const selectedVoice = document.getElementById('voiceSelect').value;
       const utterance = new SpeechSynthesisUtterance(text);
-      utterance.lang = 'ro-RO';
+      utterance.lang = selectedVoice.includes('en') ? 'en-US' : 'ro-RO';
       utterance.voice = speechSynthesis.getVoices().find(v => v.name === selectedVoice);
       speechSynthesis.cancel();
       speechSynthesis.speak(utterance);
@@ -146,19 +146,15 @@
       };
     }
 
-    // PWA - Înregistrare service worker
-    if ('serviceWorker' in navigator) {
-      navigator.serviceWorker.register('sw.js').then(() => {
-        console.log('✅ Service Worker înregistrat');
-      }).catch(error => {
-        console.warn('❌ Eroare SW:', error);
-      });
-    }
-
     window.onload = () => {
       populateVoices();
       loadConversation();
+      // Fix pentru unele browsere care întârzie încărcarea vocilor
+      if (speechSynthesis.onvoiceschanged !== undefined) {
+        speechSynthesis.onvoiceschanged = populateVoices;
+      }
     };
   </script>
 </body>
 </html>
+
