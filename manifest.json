@@ -4,8 +4,8 @@
   "start_url": "/",
   "display": "standalone",
   "background_color": "#ffffff",
-  "theme_color": "#222222",
-  "description": "Asistent AI cu voce, personalitate, PWA și salvare locală.",
+  "theme_color": "#ffffff",
+  "description": "Asistent AI cu voce, personalitate și funcționalități avansate.",
   "icons": [
     {
       "src": "icon-192.png",
