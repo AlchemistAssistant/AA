@@ -1,3 +1,5 @@
+// Load environment variables
+import 'dotenv/config';
 import express from 'express';
 import bodyParser from 'body-parser';
 import cors from 'cors';
@@ -6,11 +8,12 @@ import fetch from 'node-fetch';
 const app = express();
 const PORT = 3000;
 
+// Middleware
 app.use(cors());
 app.use(bodyParser.json());
-app.use(express.static('.'));
+app.use(express.static('.')); // Servește fișierele statice (index.html etc.)
 
-const API_KEY = process.env.OPENROUTER_API_KEY ; 
+const API_KEY = process.env.OPENROUTER_API_KEY;
 
 app.post('/gpt', async (req, res) => {
   const { prompt, lang, personality } = req.body;
@@ -35,13 +38,13 @@ app.post('/gpt', async (req, res) => {
     const result = await response.json();
     const reply = result.choices?.[0]?.message?.content || 'Fără răspuns.';
     res.json({ response: reply });
-  } catch (e) {
-    console.error('Eroare:', e);
+  } catch (error) {
+    console.error('Eroare la OpenRouter:', error);
     res.json({ response: 'Eroare de rețea sau răspuns invalid.' });
   }
 });
 
 app.listen(PORT, () => {
-  console.log(`🧠 AA rulează pe http://localhost:${PORT} (OpenRouter)`);
+  console.log(`🧠 Alchemist Assistant rulează pe http://localhost:${PORT} (OpenRouter)`);
 });
 
