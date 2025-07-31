@@ -6,10 +6,9 @@
   <title>🧙‍♂️ AA</title>
   <link rel="manifest" href="manifest.json" />
   <link rel="stylesheet" href="style.css" />
-
   <script>
     if (!localStorage.getItem('authenticated')) {
-      const pass = prompt('🔐 Introdu parola pentru a accesa AA:');
+      const pass = prompt('🔐 Introdu parola pentru a accesa Alchemist Assistant:');
       if (pass !== 'alchemy2090') {
         alert('Parolă incorectă!');
         window.location.reload();
@@ -85,7 +84,7 @@
     function speakText(text) {
       const selectedVoice = document.getElementById('voiceSelect').value;
       const utterance = new SpeechSynthesisUtterance(text);
-      utterance.lang = selectedVoice.includes('en') ? 'en-US' : 'ro-RO';
+      utterance.lang = document.getElementById('lang').value === 'ro' ? 'ro-RO' : 'en-US';
       utterance.voice = speechSynthesis.getVoices().find(v => v.name === selectedVoice);
       speechSynthesis.cancel();
       speechSynthesis.speak(utterance);
@@ -138,7 +137,7 @@
 
     function startListening() {
       const recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
-      recognition.lang = 'ro-RO';
+      recognition.lang = document.getElementById('lang').value === 'ro' ? 'ro-RO' : 'en-US';
       recognition.start();
       recognition.onresult = (event) => {
         const transcript = event.results[0][0].transcript;
@@ -149,7 +148,6 @@
     window.onload = () => {
       populateVoices();
       loadConversation();
-      // Fix pentru unele browsere care întârzie încărcarea vocilor
       if (speechSynthesis.onvoiceschanged !== undefined) {
         speechSynthesis.onvoiceschanged = populateVoices;
       }
