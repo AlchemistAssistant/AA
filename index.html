@@ -6,12 +6,13 @@
   <title>🧙‍♂️ AA</title>
   <link rel="manifest" href="manifest.json" />
   <link rel="stylesheet" href="style.css" />
+
   <script>
     if (!localStorage.getItem('authenticated')) {
-      const pass = prompt('🔐 Introdu parola pentru a accesa Alchemist Assistant:');
+      const pass = prompt('🔐 Introdu parola pentru a accesa AA:');
       if (pass !== 'alchemy2090') {
         alert('Parolă incorectă!');
-        window.location.reload();
+        location.reload();
       } else {
         localStorage.setItem('authenticated', 'true');
       }
@@ -66,26 +67,30 @@
       conversation.innerHTML += `<div><strong>Tu:</strong> ${prompt}</div>`;
       document.getElementById('prompt').value = '';
 
-      const response = await fetch('/gpt', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ prompt: message, lang, personality })
-      });
+      try {
+        const response = await fetch('/gpt', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ prompt: message, lang, personality })
+        });
 
-      const data = await response.json();
-      const reply = data.response || 'Fără răspuns.';
-
-      lastResponse = reply;
-      conversation.innerHTML += `<div><strong>AI:</strong> ${reply}</div>`;
-      speakText(reply);
-      saveConversation();
+        const data = await response.json();
+        const reply = data.response || 'Fără răspuns.';
+        lastResponse = reply;
+        conversation.innerHTML += `<div><strong>AI:</strong> ${reply}</div>`;
+        speakText(reply);
+        saveConversation();
+      } catch (err) {
+        conversation.innerHTML += `<div><strong>Eroare:</strong> Nu s-a putut trimite întrebarea.</div>`;
+      }
     }
 
     function speakText(text) {
       const selectedVoice = document.getElementById('voiceSelect').value;
       const utterance = new SpeechSynthesisUtterance(text);
-      utterance.lang = document.getElementById('lang').value === 'ro' ? 'ro-RO' : 'en-US';
-      utterance.voice = speechSynthesis.getVoices().find(v => v.name === selectedVoice);
+      utterance.lang = 'ro-RO';
+      const voice = speechSynthesis.getVoices().find(v => v.name === selectedVoice);
+      if (voice) utterance.voice = voice;
       speechSynthesis.cancel();
       speechSynthesis.speak(utterance);
     }
@@ -137,7 +142,7 @@
 
     function startListening() {
       const recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
-      recognition.lang = document.getElementById('lang').value === 'ro' ? 'ro-RO' : 'en-US';
+      recognition.lang = 'ro-RO';
       recognition.start();
       recognition.onresult = (event) => {
         const transcript = event.results[0][0].transcript;
@@ -148,10 +153,9 @@
     window.onload = () => {
       populateVoices();
       loadConversation();
-      if (speechSynthesis.onvoiceschanged !== undefined) {
-        speechSynthesis.onvoiceschanged = populateVoices;
-      }
     };
+
+    window.speechSynthesis.onvoiceschanged = populateVoices;
   </script>
 </body>
 </html>
