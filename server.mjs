@@ -10,7 +10,7 @@ app.use(cors());
 app.use(bodyParser.json());
 app.use(express.static('.'));
 
-const API_KEY = process.env.OPENROUTER_API_KEY || ''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'; 
+const API_KEY = process.env.OPENROUTER_API_KEY ; 
 
 app.post('/gpt', async (req, res) => {
   const { prompt, lang, personality } = req.body;
