@@ -1,26 +1,31 @@
 {
-  "name": "AA",
+  "name": "Alchemist Assistant",
   "short_name": "AA",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#ffffff",
   "theme_color": "#ffffff",
-  "description": "Asistent AI cu voce, personalitate și funcționalități avansate.",
+  "description": "Asistent AI cu voce, personalitate și instalabil pe telefon (PWA)",
   "icons": [
     {
       "src": "icon-192.png",
-      "sizes": "192x192",
-      "type": "image/png"
+      "type": "image/png",
+      "sizes": "192x192"
     },
     {
       "src": "icon-284.png",
-      "sizes": "284x284",
-      "type": "image/png"
+      "type": "image/png",
+      "sizes": "284x284"
+    },
+    {
+      "src": "icon-384.png",
+      "type": "image/png",
+      "sizes": "384x384"
     },
     {
       "src": "icon-512.png",
-      "sizes": "512x512",
-      "type": "image/png"
+      "type": "image/png",
+      "sizes": "512x512"
     }
   ]
 }
