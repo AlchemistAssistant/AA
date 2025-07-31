@@ -47,4 +47,3 @@ app.post('/gpt', async (req, res) => {
 app.listen(PORT, () => {
   console.log(`🧠 Alchemist Assistant rulează pe http://localhost:${PORT} (OpenRouter)`);
 });
-
